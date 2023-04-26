@@ -67,7 +67,7 @@ jobs:
     #   modify them (or add more) to build your code if your project, please refer to the EXAMPLE below for guidance.
 
     - run: |
-         java Remote_code.java
+       java ./src/main/java/com/acme/basic/Remote_code.java
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v2
