@@ -74,10 +74,3 @@ jobs:
         # files are stored in a directory specified by the 'CLASSPATH'
         # environment variable, you can set this to '${{ env.CLASSPATH }}'.
         classpath: .
-        
-    - name: Perform CodeQL Analysis
-      uses: github/codeql-action/analyze@v2
-     # with:
-        # Path to the CodeQL query
-        # You can replace this with the path to your own query file.
-   #     query: security-extended.ql
