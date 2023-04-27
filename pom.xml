@@ -17,7 +17,7 @@
       <artifactId>sqlite-jdbc</artifactId>
       <version>3.36.0.3</version>
     </dependency>
-    <!-- Java Swing Dependencies -->
+    <!-- JavaFX Dependencies -->
     <dependency>
       <groupId>org.openjfx</groupId>
       <artifactId>javafx-controls</artifactId>
@@ -51,8 +51,12 @@
           <archive>
             <manifest>
               <mainClass>com.example.XSS2</mainClass>
+              <addClasspath>true</addClasspath>
             </manifest>
           </archive>
+          <includes>
+            <include>**/*.class</include>
+          </includes>
         </configuration>
       </plugin>
     </plugins>
