@@ -39,7 +39,9 @@ jobs:
         languages: ${{ matrix.language }}
 
     - name: Build
-      run: mvn clean package -DskipTests=true
+      run: |
+        mvn compile
+      #  mvn clean package -DskipTests=true
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v2
