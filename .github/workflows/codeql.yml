@@ -19,7 +19,7 @@ jobs:
 
       # Step 2: Initialize the CodeQL environment
       - name: Initialize CodeQL
-        uses: github/codeql-action/init@v1
+        uses: github/codeql-action/init@v2
 
       # Step 3: Add the Java code to the CodeQL database
       - name: Add Java code to CodeQL database
