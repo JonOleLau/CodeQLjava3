@@ -1,47 +1,34 @@
-name: "CodeQL"
+name: CodeQL Analysis
 
 on:
   push:
-    branches: [ "main" ]
+    branches:
+      - main
   pull_request:
-    # The branches below must be a subset of the branches above.
-    branches: [ "main" ]
-  schedule:
-    - cron: '1 * * * *'
-  workflow_dispatch: # Add this line to enable manual triggers
+    branches:
+      - main
 
 jobs:
   analyze:
-    name: Analyze
     runs-on: ubuntu-latest
-    permissions:
-      actions: read
-      contents: read
-      security-events: write
-
-    strategy:
-      fail-fast: false
-      matrix:
-        language: [ 'java' ]
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v2
-      
-    - name: Setup Node.js
-      uses: actions/setup-node@v2
-      with:
-        node-version: 16
+      # Step 1: Checkout the code
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-    - name: Initialize CodeQL
-      uses: github/codeql-action/init@v2
-      with:
-        languages: ${{ matrix.language }}
+      # Step 2: Initialize the CodeQL environment
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v1
 
-    - name: Build
-      run: |
-        mvn compile
-      #  mvn clean package -DskipTests=true
+      # Step 3: Add the Java code to the CodeQL database
+      - name: Add Java code to CodeQL database
+        run: |
+          codeql database init mydb --language=java
+          codeql database analyze mydb /path/to/java/files
 
-    - name: Perform CodeQL Analysis
-      uses: github/codeql-action/analyze@v2
+      # Step 4: Run CodeQL queries against the database
+      - name: Run CodeQL queries
+        run: |
+          # Replace this with your CodeQL queries
+          codeql query run /path/to/query.ql --database=mydb
