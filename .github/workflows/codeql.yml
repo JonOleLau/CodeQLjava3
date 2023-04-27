@@ -1,34 +1,83 @@
-name: CodeQL Analysis
+name: "CodeQL"
 
 on:
   push:
-    branches:
-      - main
+    branches: [ "main" ]
   pull_request:
-    branches:
-      - main
+    # The branches below must be a subset of the branches above.
+    branches: [ "main" ]
+  schedule:
+    - cron: '1 * * * *'
+  workflow_dispatch: # Add this line to enable manual triggers
 
 jobs:
-  analyze:
+  build:
+    name: Build
     runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+
+    strategy:
+      fail-fast: false
+      matrix:
+        language: [ 'java' ]
 
     steps:
-      # Step 1: Checkout the code
-      - name: Checkout code
-        uses: actions/checkout@v2
+    - name: Checkout repository
+      uses: actions/checkout@v2
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: 16
 
-      # Step 2: Initialize the CodeQL environment
-      - name: Initialize CodeQL
-        uses: github/codeql-action/init@v2
+    - name: Initialize CodeQL
+      uses: github/codeql-action/init@v2
+      with:
+        languages: ${{ matrix.language }}
 
-      # Step 3: Add the Java code to the CodeQL database
-      - name: Add Java code to CodeQL database
-        run: |
-          codeql database init mydb --language=java
-          codeql database analyze mydb /path/to/java/files
+    - name: Compile Java code
+      run: |
+        javac XSS2.java
 
-      # Step 4: Run CodeQL queries against the database
-      - name: Run CodeQL queries
-        run: |
-          # Replace this with your CodeQL queries
-          codeql query run /path/to/query.ql --database=mydb
+  analyze:
+    name: Analyze
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Initialize CodeQL
+      uses: github/codeql-action/init@v2
+      with:
+        languages: java
+
+    - name: Autobuild CodeQL database
+      uses: github/codeql-action/autobuild@v2
+      with:
+        # Path to the compiled Java code
+        # This should match the location where the 'javac' command
+        # stores the compiled class files.
+        # For example, if you used the 'javac' command to compile your
+        # Java code and the compiled class files are stored in a
+        # directory called 'bin', you can set this to 'bin'.
+        # You can also use environment variables to reference the
+        # compiled class files. For example, if the compiled class
+        # files are stored in a directory specified by the 'CLASSPATH'
+        # environment variable, you can set this to '${{ env.CLASSPATH }}'.
+        classpath: .
+        
+    - name: Perform CodeQL Analysis
+      uses: github/codeql-action/analyze@v2
+     # with:
+        # Path to the CodeQL query
+        # You can replace this with the path to your own query file.
+   #     query: security-extended.ql
